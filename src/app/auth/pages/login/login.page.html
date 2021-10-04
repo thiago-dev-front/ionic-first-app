@@ -8,6 +8,32 @@
   </h1>
 
   <form [formGroup]="authForm" (submit)="onSubmit()">
+     <ng-container *ngIf="!configs.isSignIn">
+      <ion-item>
+      <ion-icon name="person" color="primary" slot="start"></ion-icon>
+      <ion-input
+        type="text"
+        placeholder="Name"
+        formControlName="name"
+      ></ion-input>
+      <ion-note
+        slot="end"
+        color="danger"
+        *ngIf="name.dirty && name.hasError('required')"
+        >Required</ion-note
+      >
+
+      <ion-note
+        slot="end"
+        color="danger"
+        *ngIf="name.dirty && name.hasError('minlength')"
+        >Min 3 Cha</ion-note
+      >
+    </ion-item>
+
+    </ng-container>
+
+
     <ion-item>
       <ion-icon name="mail" color="primary" slot="start"> </ion-icon>
       <ion-input
@@ -55,11 +81,11 @@
       >
     </ion-item>
     <ion-button expand="block" type="submit" [disabled]="authForm.invalid">
-      Login
+      {{ configs.action }}
     </ion-button>
   </form>
 
-  <ion-button expand="block" fill="clear"> Create account </ion-button>
+  <ion-button expand="block" fill="clear" (click)="changeAuthAction()"> {{ configs.actionChange }} </ion-button>
   <ion-button expand="block">
     <ion-icon name="logo-facebook" slot="start">Login with Facebook</ion-icon>
   </ion-button>
