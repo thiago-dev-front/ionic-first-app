@@ -5,6 +5,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthProvider } from 'src/app/core/services/auth.types';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +15,7 @@ import {
 })
 export class LoginPage implements OnInit {
   authForm: FormGroup;
+  authProviders = AuthProvider;
   configs = {
     isSignIn: true,
     action: 'Login',
@@ -24,7 +27,7 @@ export class LoginPage implements OnInit {
     Validators.minLength(3),
   ]);
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private authService: AuthService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.createForm();
@@ -42,10 +45,6 @@ export class LoginPage implements OnInit {
     !isSignIn
       ? this.authForm.addControl('name', this.nameControl)
       : this.authForm.removeControl('name');
-  }
-
-  onSubmit(): void {
-    console.log('AuthForm: ', this.authForm.value);
   }
 
   private createForm(): void {
@@ -68,5 +67,20 @@ export class LoginPage implements OnInit {
   get password(): FormControl {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return <FormControl>this.authForm.get('password');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  async onSubmit(provider: AuthProvider): Promise<void> {
+    try {
+      const credentials = await this.authService.authenticate({
+        isSignIn: this.configs.isSignIn,
+        user: this.authForm.value,
+        provider,
+      });
+      console.log('Authenticated ', credentials);
+      console.log('Redirecting... ');
+    } catch (e) {
+      console.log('Auth error... ', e);
+    }
   }
 }
